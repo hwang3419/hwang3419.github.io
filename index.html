@@ -3,25 +3,17 @@
     <head>
         <meta charset="utf-8">
         <title>D3 Test</title>
-        <script type="text/javascript" src="bower_components/d3/d3.min.js"></script>
+        <script type="text/javascript" src="bower_components/d3/d3.js"></script>
         <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
         <!--script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script-->
         <script type="text/javascript" src="test.js"></script>
         <style type="text/css">
-        
-            .chart {
-              display: block;
-              margin: auto;
-              margin-top: 40px;
-            }
+        .rect {
+                fill: black;
+                stroke: gray;
+                stroke-width: 5;
+             }
 
-            text {
-              font-size: 11px;
-            }
-
-            rect {
-              fill: none;
-            }
         </style>
     </head>
     <body>
@@ -35,13 +27,34 @@
                     console.log('done')
                     console.log(data.found);
 
-            };
-
-            var url = "http://public-api.wordpress.com/rest/v1/sites/wtmpeachtest.wordpress.com/posts?callback=JSON_CALLBACK";
-            var url = "http://graphmojo401p.prod.ch4.s.com:8080/cmdb/modeldump.cgi?model=graphmojo402p_prod_ch4_s_com&callback=JSON_CALLBACK";            
-            $http.get(url)
-            .success(function(){console.log(123)})
+            };   
+            
         })
+        var w = 500;
+        var h = 500;
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)   
+            .attr("height", h);
+        var data = []
+        for (i=0;i<9;i++){
+            data.push([ 0,1,2,3,4,5,6,7,8,9 ])
+            };
+        var rects = svg.selectAll('rect')
+        .data(data)
+        .enter()
+        .append('rect')
+        
+        rects.attr("width", "30")
+             .attr("height", "30")
+             .attr("x", function(d, i){
+             return i*40+20
+             })
+             .attr("y", function(d,i){
+            return 25
+            })
+             .attr('class', 'rect')
+        
     </script>
     
 
@@ -69,102 +82,10 @@
         </select></div>
       </div>
     </div>
+   
     
 
-    <script type="text/javascript">
-
-var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)*0.9,
-    h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)*0.9,
-    x = d3.scale.linear().range([0, w]),
-    y = d3.scale.linear().range([0, h]),
-    color = d3.scale.category20c(),
-    root,
-    node;
-
-var treemap = d3.layout.treemap()
-    .round(false)
-    .size([w, h])
-    .sticky(true)
-    .value(function(d) { return d.size; });
-
-var svg = d3.select("#body").append("div")
-    .attr("class", "chart")
-    .style("width", w + "px")
-    .style("height", h + "px")
-  .append("svg:svg")
-    .attr("width", w)
-    .attr("height", h)
-  .append("svg:g")
-    .attr("transform", "translate(.5,.5)");
-
-function processJson(data) {
-  node = root = data;
-
-  var nodes = treemap.nodes(root)
-      .filter(function(d) { return !d.children; });
-
-  var cell = svg.selectAll("g")
-      .data(nodes)
-    .enter().append("svg:g")
-      .attr("class", "cell")
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-      .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
-
-  cell.append("svg:rect")
-      .attr("width", function(d) { return d.dx - 1; })
-      .attr("height", function(d) { return d.dy - 1; })
-      .style("fill", function(d) { return color(d.parent.name); });
-
-  cell.append("svg:text")
-      .attr("x", function(d) { return d.dx / 2; })
-      .attr("y", function(d) { return d.dy / 2; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .text(function(d) { return d.name; })
-      .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
-
-  d3.select(window).on("click", function() { zoom(root); });
-
-  d3.select("select").on("change", function() {
-    treemap.value(this.value == "size" ? size : count).nodes(root);
-    zoom(node);
-  });
-};
-
-function size(d) {
-  return d.size;
-}
-
-function count(d) {
-  return 1;
-}
-
-function zoom(d) {
-  var kx = w / d.dx, ky = h / d.dy;
-  x.domain([d.x, d.x + d.dx]);
-  y.domain([d.y, d.y + d.dy]);
-
-  var t = svg.selectAll("g.cell").transition()
-      .duration(d3.event.altKey ? 7500 : 750)
-      .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-  t.select("rect")
-      .attr("width", function(d) { return kx * d.dx - 1; })
-      .attr("height", function(d) { return ky * d.dy - 1; })
-
-  t.select("text")
-      .attr("x", function(d) { return kx * d.dx / 2; })
-      .attr("y", function(d) { return ky * d.dy / 2; })
-      .style("opacity", function(d) { return kx * d.dx > d.w ? 1 : 0; });
-
-  node = d;
-  d3.event.stopPropagation();
-}
-
-
-
-processJson(test)
-        </script>
+  
 
     </body>
 </html>     
